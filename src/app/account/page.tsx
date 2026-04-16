@@ -97,6 +97,8 @@ export default function AccountPage() {
       return;
     }
 
+    const sb = supabase;
+
     const userId = session.user.id as string;
 
     const toProduct = (row: any): Product => ({
@@ -115,11 +117,11 @@ export default function AccountPage() {
     const loadProfile = async () => {
       const [{ data: vehicleRows }, { data: favoriteRows }, { data: filterRows }, { data: recentRows }, { data: alertRows }] =
         await Promise.all([
-          supabase.from("user_vehicles").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
-          supabase.from("favorites").select("product_id").eq("user_id", userId),
-          supabase.from("saved_filters").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
-          supabase.from("recent_views").select("product_id").eq("user_id", userId).order("viewed_at", { ascending: false }).limit(6),
-          supabase.from("price_alerts").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+          sb.from("user_vehicles").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+          sb.from("favorites").select("product_id").eq("user_id", userId),
+          sb.from("saved_filters").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
+          sb.from("recent_views").select("product_id").eq("user_id", userId).order("viewed_at", { ascending: false }).limit(6),
+          sb.from("price_alerts").select("*").eq("user_id", userId).order("created_at", { ascending: false }),
         ]);
 
       setVehicles((vehicleRows ?? []).map((row) => ({
@@ -132,7 +134,7 @@ export default function AccountPage() {
 
       const favoriteIds = (favoriteRows ?? []).map((row) => row.product_id).filter(Boolean);
       if (favoriteIds.length > 0) {
-        const { data: favoriteProducts } = await supabase
+        const { data: favoriteProducts } = await sb
           .from("products")
           .select("*")
           .in("id", favoriteIds);
@@ -143,7 +145,7 @@ export default function AccountPage() {
 
       const recentIds = (recentRows ?? []).map((row) => row.product_id).filter(Boolean);
       if (recentIds.length > 0) {
-        const { data: recentProductsRows } = await supabase
+        const { data: recentProductsRows } = await sb
           .from("products")
           .select("*")
           .in("id", recentIds);

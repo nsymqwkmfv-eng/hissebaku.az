@@ -133,10 +133,12 @@ export default function Home() {
       return;
     }
 
+    const sb = supabase;
+
     let isMounted = true;
 
     const init = async () => {
-      const { data } = await supabase.auth.getSession();
+      const { data } = await sb.auth.getSession();
       if (!isMounted) {
         return;
       }
@@ -145,7 +147,7 @@ export default function Home() {
 
     init();
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: listener } = sb.auth.onAuthStateChange((_event, session) => {
       setUserSession(session);
     });
 

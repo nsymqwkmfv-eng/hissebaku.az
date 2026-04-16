@@ -39,10 +39,12 @@ export function BrandHeader({
       return;
     }
 
+    const sb = supabase;
+
     let isMounted = true;
 
     const init = async () => {
-      const { data } = await supabase.auth.getSession();
+      const { data } = await sb.auth.getSession();
       if (!isMounted) {
         return;
       }
@@ -51,7 +53,7 @@ export function BrandHeader({
 
     init();
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: listener } = sb.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
     });
 

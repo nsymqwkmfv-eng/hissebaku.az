@@ -65,10 +65,12 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
       return;
     }
 
+    const sb = supabase;
+
     let isMounted = true;
 
     const init = async () => {
-      const { data } = await supabase.auth.getSession();
+      const { data } = await sb.auth.getSession();
       if (!isMounted) {
         return;
       }
@@ -77,7 +79,7 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
 
     init();
 
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: listener } = sb.auth.onAuthStateChange((_event, nextSession) => {
       setSession(nextSession);
     });
 
@@ -92,10 +94,12 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
       return;
     }
 
+    const sb = supabase;
+
     const userId = session.user.id as string;
 
     const load = async () => {
-      const { data: favoriteRows } = await supabase
+      const { data: favoriteRows } = await sb
         .from("favorites")
         .select("product_id")
         .eq("user_id", userId)
@@ -103,7 +107,7 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
         .limit(1);
       setIsFavorite(Boolean(favoriteRows?.length));
 
-      const { data: alertRows } = await supabase
+      const { data: alertRows } = await sb
         .from("price_alerts")
         .select("id")
         .eq("user_id", userId)
@@ -111,7 +115,7 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
         .limit(1);
       setAlertId(alertRows?.[0]?.id ?? null);
 
-      await supabase.from("recent_views").upsert(
+      await sb.from("recent_views").upsert(
         {
           user_id: userId,
           product_id: product.id,
