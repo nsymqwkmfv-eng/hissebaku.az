@@ -1,6 +1,10 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import { useCallback } from "react";
+import { useRouter } from "next/navigation";
 import type { Product } from "@/types/catalog";
 
 type ProductCardProps = {
@@ -11,13 +15,22 @@ type ProductCardProps = {
 export function ProductCard({ product, index = 0 }: ProductCardProps) {
   const primaryImage = product.images[0];
   const imageSrc = primaryImage?.src;
+  const router = useRouter();
+  const href = `/products/${encodeURIComponent(product.slug ?? product.id)}`;
+  const handlePrefetch = useCallback(() => {
+    router.prefetch(href);
+  }, [router, href]);
 
   return (
     <Link
-      href={`/products/${encodeURIComponent(product.slug ?? product.id)}`}
+      href={href}
       aria-label={`${product.title} detallarına bax`}
       className="dashboard-reveal group block h-full"
       style={{ animationDelay: `${160 + index * 70}ms` }}
+      prefetch
+      onPointerEnter={handlePrefetch}
+      onFocus={handlePrefetch}
+      onTouchStart={handlePrefetch}
     >
       <article className="relative flex h-full flex-col overflow-hidden rounded-[16px] bg-white shadow-[0_10px_24px_rgba(24,24,27,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_34px_rgba(24,24,27,0.12)] md:rounded-[18px]">
         <div className="relative aspect-[16/10] overflow-hidden">
@@ -73,16 +86,16 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
         </div>
 
           <footer className="mt-auto flex min-h-[34px] items-center gap-2 pt-1 md:min-h-[42px]">
-          <span className="rounded-lg bg-zinc-100 px-2 py-0.5 text-[13px] font-semibold text-zinc-800 md:px-3 md:py-1.5 md:text-base">
-            {product.price} ₼
-          </span>
-          <span
-            className="group/cta relative ml-auto inline-flex items-center gap-1.5 overflow-hidden rounded-lg border border-zinc-900 bg-zinc-900 px-2.5 py-1 text-[12px] font-medium text-white transition duration-300 hover:-translate-y-0.5 hover:border-[#d51414] hover:shadow-[0_10px_20px_rgba(213,20,20,0.25)] md:px-3.5 md:py-2 md:text-sm"
-          >
-            <span className="absolute inset-0 -translate-x-full bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.2),transparent)] transition duration-500 group-hover/cta:translate-x-full" />
-            <span className="relative">Ətraflı bax</span>
-            <ArrowUpRight className="relative size-3.5 transition-transform duration-300 group-hover/cta:-translate-y-0.5 group-hover/cta:translate-x-0.5" />
-          </span>
+            <span className="w-full rounded-lg bg-zinc-100 px-2 py-1 text-[13px] font-semibold text-zinc-800 md:w-auto md:px-3 md:py-1.5 md:text-base">
+              {product.price} ₼
+            </span>
+            <span
+              className="group/cta relative ml-auto hidden items-center gap-1.5 overflow-hidden rounded-lg border border-zinc-900 bg-zinc-900 px-2.5 py-1 text-[12px] font-medium text-white transition duration-300 hover:-translate-y-0.5 hover:border-[#d51414] hover:shadow-[0_10px_20px_rgba(213,20,20,0.25)] md:inline-flex md:px-3.5 md:py-2 md:text-sm"
+            >
+              <span className="absolute inset-0 -translate-x-full bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.2),transparent)] transition duration-500 group-hover/cta:translate-x-full" />
+              <span className="relative">Ətraflı bax</span>
+              <ArrowUpRight className="relative size-3.5 transition-transform duration-300 group-hover/cta:-translate-y-0.5 group-hover/cta:translate-x-0.5" />
+            </span>
           </footer>
         </div>
       </article>

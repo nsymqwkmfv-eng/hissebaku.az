@@ -41,7 +41,7 @@ export const metadata: Metadata = {
       "Orijinal avto hissələri, rəsmi zəmanət və sürətli çatdırılma. Hissə Baku-da avtomobiliniz üçün doğru hissəni seçin.",
     images: [
       {
-        url: "/webthumbnail.jpg",
+        url: "https://github.com/nsymqwkmfv-eng/hissebaku.az/blob/main/public/WEBTHUMBNAIL.jpg?raw=true",
         width: 1200,
         height: 630,
         alt: "Hissə Baku",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     title: "Hissə Baku | Avto Ehtiyat Hissələri",
     description:
       "Orijinal avto hissələri, rəsmi zəmanət və sürətli çatdırılma. Hissə Baku-da avtomobiliniz üçün doğru hissəni seçin.",
-    images: ["/webthumbnail.jpg"],
+    images: ["https://github.com/nsymqwkmfv-eng/hissebaku.az/blob/main/public/WEBTHUMBNAIL.jpg?raw=true"],
   },
   icons: {
     icon: [
