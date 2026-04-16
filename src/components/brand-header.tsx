@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Search, X } from "lucide-react";
+import { Search, User, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 
@@ -90,12 +90,21 @@ export function BrandHeader({
               </span>
             )}
           </Link>
-          <a
-            href="https://wa.me/994503919290?text=Salam%21%20Sifaris%20ucun%20yaziram."
-            className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-2xl bg-[linear-gradient(120deg,#da1919_0%,#b91111_100%)] px-4 py-2 text-xs font-semibold leading-none tracking-[0.01em] text-white shadow-[0_10px_22px_rgba(213,20,20,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(185,17,17,0.22)] lg:hidden"
-          >
-            İndi sifariş et
-          </a>
+          <div className="flex items-center gap-2 lg:hidden">
+            <a
+              href="https://wa.me/994503919290?text=Salam%21%20Sifaris%20ucun%20yaziram."
+              className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-2xl bg-[linear-gradient(120deg,#da1919_0%,#b91111_100%)] px-4 py-2 text-xs font-semibold leading-none tracking-[0.01em] text-white shadow-[0_10px_22px_rgba(213,20,20,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(185,17,17,0.22)]"
+            >
+              İndi sifariş et
+            </a>
+            <Link
+              href="/account"
+              className="inline-flex size-9 items-center justify-center rounded-2xl border border-zinc-200 bg-white text-zinc-700 transition hover:border-zinc-300 hover:text-zinc-900"
+              aria-label="Profil"
+            >
+              <User className="size-4" />
+            </Link>
+          </div>
         </div>
 
         <nav className="hidden shrink-0 items-center gap-6 text-sm font-medium lg:flex">
@@ -216,6 +225,13 @@ export function BrandHeader({
         </div>
 
         <div className="hidden shrink-0 items-center gap-2.5 lg:flex">
+          <Link
+            href="/account"
+            className="inline-flex size-10 items-center justify-center rounded-2xl border border-zinc-200 bg-white text-zinc-700 transition hover:border-zinc-300 hover:text-zinc-900"
+            aria-label="Profil"
+          >
+            <User className="size-4" />
+          </Link>
           <a
             href="https://wa.me/994503919290?text=Salam%21%20Sifaris%20ucun%20yaziram."
             className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-2xl bg-[linear-gradient(120deg,#da1919_0%,#b91111_100%)] px-5 py-2.5 text-sm font-semibold leading-none tracking-[0.01em] text-white shadow-[0_10px_22px_rgba(213,20,20,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(185,17,17,0.22)]"

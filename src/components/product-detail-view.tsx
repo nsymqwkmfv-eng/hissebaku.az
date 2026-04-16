@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
-import { useMemo, useState } from "react";
+import { ArrowLeft, Bell, Heart } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BrandHeader } from "@/components/brand-header";
 import { ServiceHighlights } from "@/components/service-highlights";
 import { SiteFooter } from "@/components/site-footer";
+import { supabase } from "@/lib/supabaseClient";
 import type { Category, Product } from "@/types/catalog";
 
 type ProductDetailViewProps = {
@@ -20,6 +21,11 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
   const [searchDraft, setSearchDraft] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [session, setSession] = useState<any | null>(null);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFavoriteBusy, setIsFavoriteBusy] = useState(false);
+  const [alertPrice, setAlertPrice] = useState("");
+  const [alertStatus, setAlertStatus] = useState<string | null>(null);
   const router = useRouter();
 
   const suggestionPool = useMemo(
@@ -51,6 +57,110 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
   const whatsappMessage = encodeURIComponent(
     `Salam! Bu məhsul haqqında ətraflı məlumat almaq istəyirəm: ${productUrl}`,
   );
+
+  useEffect(() => {
+    if (!supabase) {
+      return;
+    }
+
+    let isMounted = true;
+
+    const init = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!isMounted) {
+        return;
+      }
+      setSession(data.session ?? null);
+    };
+
+    init();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+    });
+
+    return () => {
+      isMounted = false;
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!supabase || !session?.user?.id) {
+      return;
+    }
+
+    const userId = session.user.id as string;
+
+    const load = async () => {
+      const { data: favoriteRows } = await supabase
+        .from("favorites")
+        .select("product_id")
+        .eq("user_id", userId)
+        .eq("product_id", product.id)
+        .limit(1);
+      setIsFavorite(Boolean(favoriteRows?.length));
+
+      await supabase.from("recent_views").upsert(
+        {
+          user_id: userId,
+          product_id: product.id,
+          viewed_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id,product_id" },
+      );
+    };
+
+    load();
+  }, [product.id, session]);
+
+  const handleToggleFavorite = async () => {
+    if (!supabase || !session?.user?.id) {
+      setAlertStatus("Seçilmişlər üçün profilə daxil olun.");
+      return;
+    }
+
+    setIsFavoriteBusy(true);
+    if (isFavorite) {
+      await supabase
+        .from("favorites")
+        .delete()
+        .eq("user_id", session.user.id)
+        .eq("product_id", product.id);
+      setIsFavorite(false);
+    } else {
+      await supabase.from("favorites").insert({
+        user_id: session.user.id,
+        product_id: product.id,
+      });
+      setIsFavorite(true);
+    }
+    setIsFavoriteBusy(false);
+  };
+
+  const handleSaveAlert = async () => {
+    if (!supabase || !session?.user?.id) {
+      setAlertStatus("Bildiriş üçün profilə daxil olun.");
+      return;
+    }
+
+    const target = alertPrice ? Number(alertPrice) : null;
+    const { error } = await supabase.from("price_alerts").upsert(
+      {
+        user_id: session.user.id,
+        product_id: product.id,
+        target_price: target,
+      },
+      { onConflict: "user_id,product_id" },
+    );
+
+    if (error) {
+      setAlertStatus("Bildiriş yadda saxlanılmadı.");
+      return;
+    }
+
+    setAlertStatus("Bildiriş quruldu.");
+  };
 
   return (
     <div className="min-h-screen">
@@ -149,6 +259,19 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
                   <span className="rounded-full bg-zinc-100 px-3 py-1 text-sm font-semibold text-zinc-800">
                     {product.price} ₼
                   </span>
+                  <button
+                    type="button"
+                    onClick={handleToggleFavorite}
+                    className={`inline-flex items-center gap-2 rounded-full border px-3 py-1 text-sm font-semibold transition ${
+                      isFavorite
+                        ? "border-[#d51414] text-[#d51414]"
+                        : "border-zinc-200 text-zinc-600 hover:border-zinc-300 hover:text-zinc-900"
+                    }`}
+                    disabled={isFavoriteBusy}
+                  >
+                    <Heart className={`size-4 ${isFavorite ? "fill-current" : ""}`} />
+                    Seçilmişlər
+                  </button>
                   {product.discount ? (
                     <span className="rounded-full bg-[#d51414] px-3 py-1 text-sm font-semibold text-white">
                       {product.discount}% Endirim
@@ -188,6 +311,31 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
                 >
                   İndi sifariş et
                 </a>
+                <div className="mt-4 rounded-2xl bg-white/10 p-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-zinc-300">Bildiriş</p>
+                  <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+                    <div className="flex flex-1 items-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-sm">
+                      <Bell className="size-4 text-zinc-200" />
+                      <input
+                        type="number"
+                        value={alertPrice}
+                        onChange={(event) => setAlertPrice(event.target.value)}
+                        placeholder="Hədəf qiymət (opsional)"
+                        className="w-full bg-transparent text-sm text-white placeholder:text-zinc-400 outline-none"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleSaveAlert}
+                      className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-zinc-900 transition hover:bg-zinc-100"
+                    >
+                      Bildiriş qur
+                    </button>
+                  </div>
+                  {alertStatus ? (
+                    <p className="mt-2 text-xs text-zinc-300">{alertStatus}</p>
+                  ) : null}
+                </div>
               </div>
             </div>
           </div>

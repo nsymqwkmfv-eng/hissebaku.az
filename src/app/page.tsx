@@ -26,6 +26,8 @@ export default function Home() {
   const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
   const [catalogError, setCatalogError] = useState<string | null>(null);
+  const [userSession, setUserSession] = useState<any | null>(null);
+  const [saveStatus, setSaveStatus] = useState<string | null>(null);
   const [searchDraft, setSearchDraft] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategoryId, setActiveCategoryId] = useState("all");
@@ -127,6 +129,63 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (!supabase) {
+      return;
+    }
+
+    let isMounted = true;
+
+    const init = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!isMounted) {
+        return;
+      }
+      setUserSession(data.session ?? null);
+    };
+
+    init();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserSession(session);
+    });
+
+    return () => {
+      isMounted = false;
+      listener.subscription.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const filtersParam = new URLSearchParams(window.location.search).get("filters");
+    if (!filtersParam) {
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(decodeURIComponent(filtersParam));
+      suppressNextUrlSync.current = true;
+      setActiveCategoryId(parsed.activeCategoryId ?? "all");
+      setSelectedItem(parsed.selectedItem ?? null);
+      setStockFilter(parsed.stockFilter ?? "all");
+      setPricePreset(parsed.pricePreset ?? "all");
+      setOnlyDiscounted(Boolean(parsed.onlyDiscounted));
+      setSortBy(parsed.sortBy ?? "popular");
+      setMaxPrice(parsed.maxPrice ?? 400);
+      if (typeof parsed.searchQuery === "string") {
+        setSearchDraft(parsed.searchQuery);
+        setSearchQuery(parsed.searchQuery);
+      }
+      router.replace("/", { scroll: false });
+    } catch {
+      router.replace("/", { scroll: false });
+    }
+  }, [router]);
+
+  useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
@@ -144,6 +203,52 @@ export default function Home() {
       setSearchQuery(queryValue);
     }
   }, [searchQuery]);
+
+  const handleSaveFilters = async () => {
+    if (!supabase || !userSession?.user?.id) {
+      setSaveStatus("Filtrləri saxlamaq üçün daxil olun.");
+      return;
+    }
+
+    const label = window.prompt("Filtri adlandırın", "Seçilmiş filtrlər");
+    if (!label) {
+      return;
+    }
+
+    const payload = {
+      activeCategoryId,
+      selectedItem,
+      stockFilter,
+      pricePreset,
+      onlyDiscounted,
+      sortBy,
+      maxPrice,
+      searchQuery,
+    };
+
+    const { error } = await supabase.from("saved_filters").insert({
+      user_id: userSession.user.id,
+      label,
+      payload,
+    });
+
+    if (error) {
+      setSaveStatus("Filtr saxlanılmadı.");
+      return;
+    }
+
+    setSaveStatus("Filtr yadda saxlandı.");
+  };
+
+  useEffect(() => {
+    if (!catalogProducts.length) {
+      return;
+    }
+
+    catalogProducts.slice(0, 8).forEach((product) => {
+      router.prefetch(`/products/${encodeURIComponent(product.slug ?? product.id)}`);
+    });
+  }, [catalogProducts, router]);
 
   const suggestionPool = useMemo(
     () =>
@@ -372,6 +477,18 @@ export default function Home() {
                   <p className="mt-1 text-sm text-zinc-500">
                     Məhsulları istədiyiniz qaydada sıralayıb daha tez seçim edin.
                   </p>
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={handleSaveFilters}
+                      className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-3 py-1 text-xs font-semibold text-zinc-600 transition hover:border-zinc-300 hover:text-zinc-900"
+                    >
+                      Filtri yadda saxla
+                    </button>
+                    {saveStatus ? (
+                      <span className="text-xs text-zinc-500">{saveStatus}</span>
+                    ) : null}
+                  </div>
                 </div>
               </div>
             </section>
