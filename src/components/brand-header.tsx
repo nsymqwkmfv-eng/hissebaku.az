@@ -2,9 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Search, User, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Menu, Search, User, X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
+import { supabase } from "@/lib/supabaseClient";
 
 type BrandHeaderProps = {
   searchDraft: string;
@@ -29,7 +30,36 @@ export function BrandHeader({
   const [logoError, setLogoError] = useState(false);
   const [isSuggestionOpen, setIsSuggestionOpen] = useState(false);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [session, setSession] = useState<any | null>(null);
   const showClear = searchDraft.trim().length > 0;
+
+  useEffect(() => {
+    if (!supabase) {
+      return;
+    }
+
+    let isMounted = true;
+
+    const init = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (!isMounted) {
+        return;
+      }
+      setSession(data.session ?? null);
+    };
+
+    init();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      setSession(nextSession);
+    });
+
+    return () => {
+      isMounted = false;
+      listener.subscription.unsubscribe();
+    };
+  }, []);
 
   const suggestions = useMemo(() => {
     const normalized = searchDraft.toLowerCase().trim();
@@ -91,6 +121,14 @@ export function BrandHeader({
             )}
           </Link>
           <div className="flex items-center gap-2 lg:hidden">
+            <button
+              type="button"
+              onClick={() => setIsMenuOpen(true)}
+              className="inline-flex size-9 items-center justify-center rounded-2xl border border-zinc-200 bg-white text-zinc-700 transition hover:border-zinc-300 hover:text-zinc-900"
+              aria-label="Menyu"
+            >
+              <Menu className="size-4" />
+            </button>
             <a
               href="https://wa.me/994503919290?text=Salam%21%20Sifaris%20ucun%20yaziram."
               className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-2xl bg-[linear-gradient(120deg,#da1919_0%,#b91111_100%)] px-4 py-2 text-xs font-semibold leading-none tracking-[0.01em] text-white shadow-[0_10px_22px_rgba(213,20,20,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(185,17,17,0.22)]"
@@ -240,6 +278,68 @@ export function BrandHeader({
           </a>
         </div>
       </div>
+
+      {isMenuOpen ? (
+        <div className="lg:hidden">
+          <button
+            type="button"
+            className="fixed inset-0 z-[60] bg-black/30 backdrop-blur-[2px]"
+            onClick={() => setIsMenuOpen(false)}
+            aria-label="Menyunu bagla"
+          />
+          <div className="fixed inset-x-0 top-0 z-[70] origin-top animate-[menuDrop_240ms_ease-out] rounded-b-[28px] border-b border-zinc-200 bg-white px-6 pb-6 pt-5 shadow-[0_20px_40px_rgba(24,24,27,0.18)]">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-400">Menyu</span>
+              <button
+                type="button"
+                onClick={() => setIsMenuOpen(false)}
+                className="inline-flex size-9 items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-700"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+            <nav className="mt-4 grid gap-2">
+              {[
+                { href: "/", label: "Kataloq" },
+                { href: "/endirimler", label: "Endirimlər" },
+                { href: "/brendler", label: "Brendlər" },
+                { href: "/elaqe", label: "Əlaqə" },
+                { href: "/xidmetler/catdirilma-sertleri", label: "Çatdırılma şərtləri" },
+              ].map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center justify-between rounded-2xl border px-4 py-3 text-sm font-semibold transition ${
+                    pathname === item.href
+                      ? "border-zinc-900 bg-zinc-900 text-white"
+                      : "border-zinc-200 bg-white text-zinc-700"
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {item.label}
+                  <span className="text-xs text-zinc-400">→</span>
+                </Link>
+              ))}
+            </nav>
+            <div className="mt-5 grid gap-3">
+              <Link
+                href="/account"
+                className="inline-flex w-full items-center justify-between rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm font-semibold text-zinc-700"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                {session ? "Profil" : "Daxil ol"}
+                <User className="size-4" />
+              </Link>
+              <a
+                href="https://wa.me/994503919290?text=Salam%21%20Sifaris%20ucun%20yaziram."
+                className="inline-flex w-full items-center justify-center rounded-2xl bg-[linear-gradient(120deg,#da1919_0%,#b91111_100%)] px-4 py-3 text-sm font-semibold text-white"
+              >
+                İndi sifariş et
+              </a>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </header>
   );
 }

@@ -24,8 +24,10 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
   const [session, setSession] = useState<any | null>(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isFavoriteBusy, setIsFavoriteBusy] = useState(false);
-  const [alertPrice, setAlertPrice] = useState("");
   const [alertStatus, setAlertStatus] = useState<string | null>(null);
+  const [alertId, setAlertId] = useState<string | null>(null);
+  const [isAlertBusy, setIsAlertBusy] = useState(false);
+  const [alertFeedback, setAlertFeedback] = useState<"success" | "error" | null>(null);
   const router = useRouter();
 
   const suggestionPool = useMemo(
@@ -101,6 +103,14 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
         .limit(1);
       setIsFavorite(Boolean(favoriteRows?.length));
 
+      const { data: alertRows } = await supabase
+        .from("price_alerts")
+        .select("id")
+        .eq("user_id", userId)
+        .eq("product_id", product.id)
+        .limit(1);
+      setAlertId(alertRows?.[0]?.id ?? null);
+
       await supabase.from("recent_views").upsert(
         {
           user_id: userId,
@@ -138,28 +148,52 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
     setIsFavoriteBusy(false);
   };
 
-  const handleSaveAlert = async () => {
+  const handleToggleAlert = async () => {
     if (!supabase || !session?.user?.id) {
       setAlertStatus("Bildiriş üçün profilə daxil olun.");
       return;
     }
 
-    const target = alertPrice ? Number(alertPrice) : null;
-    const { error } = await supabase.from("price_alerts").upsert(
-      {
-        user_id: session.user.id,
-        product_id: product.id,
-        target_price: target,
-      },
-      { onConflict: "user_id,product_id" },
-    );
+    setIsAlertBusy(true);
 
-    if (error) {
-      setAlertStatus("Bildiriş yadda saxlanılmadı.");
+    if (alertId) {
+      const { error } = await supabase
+        .from("price_alerts")
+        .delete()
+        .eq("id", alertId);
+      if (error) {
+        setAlertStatus("Bildiriş silinmədi.");
+        setAlertFeedback("error");
+        setIsAlertBusy(false);
+        return;
+      }
+      setAlertId(null);
+      setAlertStatus("Bildiriş ləğv edildi.");
+      setAlertFeedback("success");
+      setIsAlertBusy(false);
       return;
     }
 
+    const { data, error } = await supabase
+      .from("price_alerts")
+      .insert({
+        user_id: session.user.id,
+        product_id: product.id,
+      })
+      .select("id")
+      .single();
+
+    if (error) {
+      setAlertStatus("Bildiriş qurulmadı.");
+      setAlertFeedback("error");
+      setIsAlertBusy(false);
+      return;
+    }
+
+    setAlertId(data?.id ?? null);
     setAlertStatus("Bildiriş quruldu.");
+    setAlertFeedback("success");
+    setIsAlertBusy(false);
   };
 
   return (
@@ -314,22 +348,28 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
                 <div className="mt-4 rounded-2xl bg-white/10 p-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-zinc-300">Bildiriş</p>
                   <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
-                    <div className="flex flex-1 items-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-sm">
-                      <Bell className="size-4 text-zinc-200" />
-                      <input
-                        type="number"
-                        value={alertPrice}
-                        onChange={(event) => setAlertPrice(event.target.value)}
-                        placeholder="Hədəf qiymət (opsional)"
-                        className="w-full bg-transparent text-sm text-white placeholder:text-zinc-400 outline-none"
-                      />
+                    <div className="flex flex-1 items-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-sm text-zinc-200">
+                      <Bell className="size-4" />
+                      {alertId ? "Bildiriş aktivdir" : "Qiymət dəyişəndə xəbərdar ol"}
                     </div>
                     <button
                       type="button"
-                      onClick={handleSaveAlert}
-                      className="inline-flex items-center justify-center rounded-xl bg-white px-4 py-2 text-sm font-semibold text-zinc-900 transition hover:bg-zinc-100"
+                      onClick={handleToggleAlert}
+                      className={`group relative inline-flex items-center justify-center overflow-hidden rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                        alertFeedback === "success" ? "alert-success" : ""
+                      } ${
+                        alertFeedback === "error" ? "alert-error" : ""
+                      } ${
+                        alertId
+                          ? "border-white/40 bg-transparent text-white hover:border-white"
+                          : "border-white/20 bg-white text-zinc-900 hover:-translate-y-0.5 hover:shadow-[0_10px_24px_rgba(255,255,255,0.22)]"
+                      }`}
+                      disabled={isAlertBusy}
                     >
-                      Bildiriş qur
+                      {!alertId ? (
+                        <span className="absolute inset-0 -translate-x-full bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.6),transparent)] transition duration-700 group-hover:translate-x-full" />
+                      ) : null}
+                      {alertId ? "Bildirişi ləğv et" : "Bildiriş qur"}
                     </button>
                   </div>
                   {alertStatus ? (

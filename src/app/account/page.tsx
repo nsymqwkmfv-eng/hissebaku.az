@@ -48,6 +48,18 @@ export default function AccountPage() {
   const router = useRouter();
 
   const suggestionPool = useMemo(() => [], []);
+  const vehiclePresets = [
+    { make: "Mercedes-Benz", model: "GLE", year: "2018" },
+    { make: "Mercedes-Benz", model: "C-Class", year: "2016" },
+    { make: "BMW", model: "X5", year: "2017" },
+    { make: "BMW", model: "3 Series", year: "2015" },
+    { make: "Toyota", model: "Camry", year: "2019" },
+    { make: "Toyota", model: "Prado", year: "2014" },
+    { make: "Hyundai", model: "Elantra", year: "2018" },
+    { make: "Kia", model: "Sportage", year: "2017" },
+    { make: "Nissan", model: "X-Trail", year: "2013" },
+    { make: "Volkswagen", model: "Passat", year: "2015" },
+  ];
 
   useEffect(() => {
     if (!supabase) {
@@ -399,6 +411,30 @@ export default function AccountPage() {
                     </span>
                   </div>
                   <div className="rounded-2xl border border-zinc-200 bg-white p-4">
+                    <div className="mb-4">
+                      <p className="text-xs uppercase tracking-[0.16em] text-zinc-500">
+                        Hazır seçimlər
+                      </p>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {vehiclePresets.map((preset) => (
+                          <button
+                            key={`${preset.make}-${preset.model}-${preset.year}`}
+                            type="button"
+                            onClick={() =>
+                              setVehicleForm({
+                                make: preset.make,
+                                model: preset.model,
+                                year: preset.year,
+                                vin: "",
+                              })
+                            }
+                            className="rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-semibold text-zinc-600 transition hover:border-zinc-300 hover:text-zinc-900"
+                          >
+                            {preset.make} {preset.model} {preset.year}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                     <div className="grid gap-3 md:grid-cols-2">
                       <label className="block">
                         <span className="mb-1 block text-xs text-zinc-500">Marka</span>
@@ -530,7 +566,7 @@ export default function AccountPage() {
                   </span>
                 </div>
                 {favorites.length > 0 ? (
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {favorites.map((product, index) => (
                       <ProductCard key={product.id} product={product} index={index} />
                     ))}
@@ -550,7 +586,7 @@ export default function AccountPage() {
                   </span>
                 </div>
                 {recentProducts.length > 0 ? (
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                     {recentProducts.map((product, index) => (
                       <ProductCard key={product.id} product={product} index={index} />
                     ))}
