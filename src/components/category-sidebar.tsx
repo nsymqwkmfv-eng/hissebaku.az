@@ -411,7 +411,7 @@ export function CategorySidebar({
             Canlı konsultasiya ilə doğru hissəni tapın
           </p>
           <a
-            href="tel:+994503919290"
+            href="https://wa.me/994503919290?text=Salam%21%20Sifaris%20ucun%20yaziram."
             className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-[#d51414] px-4 py-2 text-sm font-semibold leading-none text-white transition hover:bg-[#b91111]"
           >
             Mütəxəssisə yaz

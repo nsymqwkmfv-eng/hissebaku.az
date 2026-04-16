@@ -114,7 +114,7 @@ export default function EylecSistemiPage() {
               </p>
             </div>
             <a
-              href="tel:+994503919290"
+              href="https://wa.me/994503919290?text=Salam%21%20Sifaris%20ucun%20yaziram."
               className="inline-flex items-center justify-center rounded-xl bg-[#d51414] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#b91111]"
             >
               Mütəxəssisə zəng et

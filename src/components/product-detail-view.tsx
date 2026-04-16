@@ -44,6 +44,7 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
   );
 
   const activeImage = product.images[activeImageIndex] ?? product.images[0];
+  const activeImageSrc = activeImage?.src;
   const productUrl = `https://hissebaku.az/products/${encodeURIComponent(
     product.slug ?? product.id,
   )}`;
@@ -93,16 +94,23 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
           <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-start">
             <div className="space-y-4">
               <div className="relative aspect-[4/3] w-full min-h-[320px] overflow-hidden rounded-3xl bg-zinc-100">
-                <Image
-                  src={activeImage?.src ?? ""}
-                  alt={activeImage?.alt ?? product.title}
-                  fill
-                  className="detail-image-fade object-contain"
-                  sizes="(max-width: 1024px) 100vw, 520px"
-                  key={activeImage?.src}
-                  priority
-                  loading="eager"
-                />
+                {activeImageSrc ? (
+                  <Image
+                    src={activeImageSrc}
+                    alt={activeImage?.alt ?? product.title}
+                    fill
+                    className="detail-image-fade object-contain"
+                    sizes="(max-width: 1024px) 100vw, 520px"
+                    key={activeImageSrc}
+                    priority
+                    loading="eager"
+                    unoptimized
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-zinc-400">
+                    Sekil yoxdur
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-3 overflow-x-auto pb-1 md:grid md:grid-cols-3 md:overflow-visible">
@@ -125,6 +133,7 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
                         index === activeImageIndex ? "scale-105" : "scale-100"
                       }`}
                       sizes="160px"
+                      unoptimized
                     />
                   </button>
                 ))}

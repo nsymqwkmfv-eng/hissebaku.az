@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "framerusercontent.com",
       },
+      {
+        protocol: "https",
+        hostname: "sksvkhveqeivnpfkgzwh.supabase.co",
+      },
     ],
   },
   async headers() {

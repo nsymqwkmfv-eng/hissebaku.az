@@ -91,7 +91,7 @@ export function BrandHeader({
             )}
           </Link>
           <a
-            href="tel:+994503919290"
+            href="https://wa.me/994503919290?text=Salam%21%20Sifaris%20ucun%20yaziram."
             className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-2xl bg-[linear-gradient(120deg,#da1919_0%,#b91111_100%)] px-4 py-2 text-xs font-semibold leading-none tracking-[0.01em] text-white shadow-[0_10px_22px_rgba(213,20,20,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(185,17,17,0.22)] lg:hidden"
           >
             İndi sifariş et
@@ -217,7 +217,7 @@ export function BrandHeader({
 
         <div className="hidden shrink-0 items-center gap-2.5 lg:flex">
           <a
-            href="tel:+994503919290"
+            href="https://wa.me/994503919290?text=Salam%21%20Sifaris%20ucun%20yaziram."
             className="inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-2xl bg-[linear-gradient(120deg,#da1919_0%,#b91111_100%)] px-5 py-2.5 text-sm font-semibold leading-none tracking-[0.01em] text-white shadow-[0_10px_22px_rgba(213,20,20,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(185,17,17,0.22)]"
           >
             İndi sifariş et

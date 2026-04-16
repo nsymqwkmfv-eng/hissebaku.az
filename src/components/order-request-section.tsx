@@ -101,7 +101,7 @@ export function OrderRequestSection() {
           </label>
 
           <a
-            href="tel:+994503919290"
+            href="https://wa.me/994503919290?text=Salam%21%20Sifaris%20ucun%20yaziram."
             className="group relative mt-4 inline-flex w-full items-center justify-center overflow-hidden rounded-xl bg-[#e11212] px-4 py-3 text-base font-semibold leading-none text-white transition duration-300 hover:-translate-y-0.5 hover:bg-[#c40f0f] hover:shadow-[0_14px_26px_rgba(225,18,18,0.35)]"
           >
             <span className="pointer-events-none absolute inset-0 -translate-x-full bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.24),transparent)] transition duration-700 group-hover:translate-x-full" />
