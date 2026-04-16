@@ -13,16 +13,14 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
   const imageSrc = primaryImage?.src;
 
   return (
-    <article
-      className="dashboard-reveal group relative flex h-full flex-col overflow-hidden rounded-[16px] bg-white shadow-[0_10px_24px_rgba(24,24,27,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_34px_rgba(24,24,27,0.12)] md:rounded-[18px]"
+    <Link
+      href={`/products/${encodeURIComponent(product.slug ?? product.id)}`}
+      aria-label={`${product.title} detallarına bax`}
+      className="dashboard-reveal group block h-full"
       style={{ animationDelay: `${160 + index * 70}ms` }}
     >
-      <Link
-        href={`/products/${encodeURIComponent(product.slug ?? product.id)}`}
-        className="absolute inset-0 z-0"
-        aria-label={`${product.title} detallarına bax`}
-      />
-      <div className="relative aspect-[16/10] overflow-hidden">
+      <article className="relative flex h-full flex-col overflow-hidden rounded-[16px] bg-white shadow-[0_10px_24px_rgba(24,24,27,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_34px_rgba(24,24,27,0.12)] md:rounded-[18px]">
+        <div className="relative aspect-[16/10] overflow-hidden">
         {imageSrc ? (
           <Image
             src={imageSrc}
@@ -47,19 +45,19 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
         ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col px-3 pb-3 pt-3 font-[var(--font-poppins)] md:px-4 md:pb-4 md:pt-3.5">
-        <div className="relative z-10 space-y-2 md:space-y-2.5">
-          <h3 className="line-clamp-2 min-h-[40px] break-words font-[var(--font-sans)] text-[15px] font-semibold leading-snug text-zinc-900 md:min-h-[48px] md:text-lg md:leading-tight">
+        <div className="flex flex-1 flex-col px-3 pb-3 pt-2.5 font-[var(--font-poppins)] md:px-4 md:pb-4 md:pt-3.5">
+          <div className="space-y-1.5 md:space-y-2.5">
+          <h3 className="line-clamp-2 min-h-[36px] break-words font-[var(--font-sans)] text-[14px] font-semibold leading-snug text-zinc-900 md:min-h-[48px] md:text-lg md:leading-tight">
             {product.title}
           </h3>
 
-          <p className="text-[9px] font-medium uppercase tracking-[0.08em] text-zinc-500 md:text-[10px]">
+          <p className="text-[8px] font-medium uppercase tracking-[0.08em] text-zinc-500 md:text-[10px]">
             {product.partType}
           </p>
 
           <div className="flex items-center justify-between gap-2">
             <span
-              className={`rounded-full border px-2 py-0.5 text-[9px] font-medium md:px-2.5 md:py-1 md:text-[10px] ${
+              className={`rounded-full border px-2 py-0.5 text-[8px] font-medium md:px-2.5 md:py-1 md:text-[10px] ${
                 product.inStock
                   ? "border-green-600 text-green-700"
                   : "border-red-500 text-red-600"
@@ -68,25 +66,26 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
               {product.inStock ? "Stokda var" : "Stokda yoxdur"}
             </span>
 
-            <span className="text-[9px] font-medium text-zinc-400 md:text-[10px]">
+            <span className="text-[8px] font-medium text-zinc-400 md:text-[10px]">
               #{index + 101}
             </span>
           </div>
         </div>
 
-        <footer className="relative z-10 mt-auto flex min-h-[38px] items-center gap-2 pt-1 md:min-h-[42px]">
-          <span className="rounded-lg bg-zinc-100 px-2.5 py-1 text-sm font-semibold text-zinc-800 md:px-3 md:py-1.5 md:text-base">
+          <footer className="mt-auto flex min-h-[34px] items-center gap-2 pt-1 md:min-h-[42px]">
+          <span className="rounded-lg bg-zinc-100 px-2 py-0.5 text-[13px] font-semibold text-zinc-800 md:px-3 md:py-1.5 md:text-base">
             {product.price} ₼
           </span>
           <span
-            className="group/cta relative ml-auto inline-flex items-center gap-1.5 overflow-hidden rounded-lg border border-zinc-900 bg-zinc-900 px-3 py-1.5 text-[13px] font-medium text-white transition duration-300 hover:-translate-y-0.5 hover:border-[#d51414] hover:shadow-[0_10px_20px_rgba(213,20,20,0.25)] md:px-3.5 md:py-2 md:text-sm"
+            className="group/cta relative ml-auto inline-flex items-center gap-1.5 overflow-hidden rounded-lg border border-zinc-900 bg-zinc-900 px-2.5 py-1 text-[12px] font-medium text-white transition duration-300 hover:-translate-y-0.5 hover:border-[#d51414] hover:shadow-[0_10px_20px_rgba(213,20,20,0.25)] md:px-3.5 md:py-2 md:text-sm"
           >
             <span className="absolute inset-0 -translate-x-full bg-[linear-gradient(120deg,transparent,rgba(255,255,255,0.2),transparent)] transition duration-500 group-hover/cta:translate-x-full" />
             <span className="relative">Ətraflı bax</span>
             <ArrowUpRight className="relative size-3.5 transition-transform duration-300 group-hover/cta:-translate-y-0.5 group-hover/cta:translate-x-0.5" />
           </span>
-        </footer>
-      </div>
-    </article>
+          </footer>
+        </div>
+      </article>
+    </Link>
   );
 }

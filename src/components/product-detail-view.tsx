@@ -76,8 +76,8 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
         resultCount={1}
       />
 
-      <main className="site-shell py-8 md:py-10">
-        <div className="detail-page-enter rounded-[28px] border border-zinc-200 bg-white p-5 shadow-[0_18px_40px_rgba(24,24,27,0.08)] md:p-8">
+      <main className="site-shell py-6 md:py-10">
+        <div className="detail-page-enter overflow-hidden rounded-[24px] border border-zinc-200 bg-white p-4 shadow-[0_18px_40px_rgba(24,24,27,0.08)] md:rounded-[28px] md:p-8">
           <div className="flex items-center justify-between gap-3">
             <Link
               href="/"
@@ -91,9 +91,9 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
             </span>
           </div>
 
-          <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-start">
+          <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:items-start">
             <div className="space-y-4">
-              <div className="relative aspect-[4/3] w-full min-h-[320px] overflow-hidden rounded-3xl bg-zinc-100">
+              <div className="relative aspect-[4/3] w-full min-h-[240px] overflow-hidden rounded-2xl bg-zinc-100 md:min-h-[320px] md:rounded-3xl">
                 {activeImageSrc ? (
                   <Image
                     src={activeImageSrc}
@@ -113,12 +113,12 @@ export function ProductDetailView({ product, categories, products }: ProductDeta
                 )}
               </div>
 
-              <div className="flex gap-3 overflow-x-auto pb-1 md:grid md:grid-cols-3 md:overflow-visible">
+              <div className="grid grid-cols-3 gap-2 md:grid-cols-3 md:gap-3">
                 {product.images.map((image, index) => (
                   <button
                     key={image.src}
                     type="button"
-                    className={`relative h-[90px] w-[120px] overflow-hidden rounded-2xl border transition md:h-auto md:w-auto md:aspect-[4/3] md:min-w-0 ${
+                    className={`relative aspect-[4/3] w-full overflow-hidden rounded-2xl border transition ${
                       index === activeImageIndex
                         ? "border-zinc-900 shadow-[0_10px_24px_rgba(24,24,27,0.14)]"
                         : "border-transparent hover:border-zinc-300"
