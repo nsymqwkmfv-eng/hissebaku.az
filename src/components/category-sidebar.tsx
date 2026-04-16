@@ -353,8 +353,10 @@ export function CategorySidebar({
                   </div>
                 </button>
                 <div
-                  className={`overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${
-                    isOpen ? "max-h-[1200px] opacity-100" : "max-h-0 opacity-0"
+                  className={`grid overflow-hidden transition-[grid-template-rows,opacity] duration-200 ease-out will-change-[grid-template-rows,opacity] ${
+                    isOpen
+                      ? "grid-rows-[1fr] opacity-100"
+                      : "grid-rows-[0fr] opacity-0 pointer-events-none"
                   }`}
                 >
                   <ul className="space-y-2 overflow-hidden">
