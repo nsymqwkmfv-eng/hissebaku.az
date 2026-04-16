@@ -1,26 +1,288 @@
+/* Footer link effect */
+.footer-link {
+  position: relative;
+  color: #23272f;
+  text-decoration: none;
+  transition: color 0.18s cubic-bezier(.4,0,.2,1);
+}
+.footer-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #d51414 0%, #b91111 100%);
+  opacity: 0;
+  transform: scaleX(0.7);
+  transition: opacity 0.18s, transform 0.18s;
+  border-radius: 2px;
+}
+.footer-link:hover,
+.footer-link:focus {
+  color: #d51414;
+}
+.footer-link:hover::after,
+.footer-link:focus::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f6f7;
+  --foreground: #22252b;
+  --brand-red: #d51414;
+  --brand-red-dark: #b91111;
+  --surface: #ffffff;
+  --surface-muted: #f1f3f5;
+  --shell-max-width: 1320px;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-brand-red: var(--brand-red);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-image: none;
+  font-family: var(--font-manrope), "Segoe UI", sans-serif;
+}
+
+.site-shell {
+  width: 100%;
+  max-width: var(--shell-max-width);
+  margin-inline: auto;
+  padding-inline: clamp(1rem, 1.4vw + 0.65rem, 2rem);
+}
+
+.text-xs,
+.text-sm,
+.text-base {
+  font-family: var(--font-poppins), "Segoe UI", sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-sans), "Segoe UI", sans-serif;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #c7c7c8 #f3f3f3;
+}
+
+@keyframes dashboardReveal {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dashboard-reveal {
+  animation: dashboardReveal 480ms ease-out both;
+}
+
+@keyframes subtleFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes softFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.subtle-float {
+  animation: subtleFloat 3.4s ease-in-out infinite;
+}
+
+.soft-fade-in {
+  animation: softFadeIn 360ms ease-out both;
+}
+
+.premium-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 7px;
+  border-radius: 999px;
+  outline: none;
+}
+
+.premium-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 2px solid #111827;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.25);
+  cursor: pointer;
+}
+
+.premium-range::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 2px solid #111827;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.25);
+  cursor: pointer;
+}
+
+@keyframes orderContentEnter {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes carFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes formGlow {
+  0%,
+  100% {
+    box-shadow: 0 30px 70px rgba(2, 6, 23, 0.4), 0 0 0 rgba(213, 20, 20, 0);
+  }
+  50% {
+    box-shadow: 0 30px 70px rgba(2, 6, 23, 0.4), 0 0 0 2px rgba(213, 20, 20, 0.12);
+  }
+}
+
+.order-content-enter {
+  animation: orderContentEnter 600ms ease-out both;
+}
+
+.order-car-float {
+  animation: carFloat 5.6s ease-in-out infinite;
+}
+
+.order-form-glow {
+  animation: formGlow 4.8s ease-in-out infinite;
+}
+
+@keyframes detailPageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes detailImageFade {
+  from {
+    opacity: 0.35;
+    transform: scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.detail-page-enter {
+  animation: detailPageEnter 520ms ease-out both;
+}
+
+.detail-image-fade {
+  animation: detailImageFade 360ms ease-out both;
+}
+
+@keyframes brandMarquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.brand-strip {
+  position: relative;
+  overflow: hidden;
+}
+
+.brand-strip-track {
+  display: flex;
+  align-items: center;
+  gap: 3.5rem;
+  width: max-content;
+  animation: brandMarquee 32s linear infinite;
+}
+
+.brand-strip-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 180px;
+}
+
+.brand-strip-logo {
+  height: 56px;
+  width: 160px;
+  object-fit: contain;
+  object-position: center;
+  filter: grayscale(1) brightness(0.75) contrast(0.85);
+  opacity: 0.65;
+}
+
+.brand-strip-fade::before,
+.brand-strip-fade::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 160px;
+  z-index: 2;
+  pointer-events: none;
+  background: transparent;
+}
+
+.brand-strip-fade::before {
+  left: 0;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.15) 65%, rgba(255, 255, 255, 0) 100%);
+  filter: blur(6px);
+}
+
+.brand-strip-fade::after {
+  right: 0;
+  background: linear-gradient(270deg, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.15) 65%, rgba(255, 255, 255, 0) 100%);
+  filter: blur(6px);
 }
