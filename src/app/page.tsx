@@ -50,6 +50,12 @@ export default function Home() {
       setCatalogLoading(true);
       setCatalogError(null);
 
+      if (!supabase) {
+        setCatalogError("Supabase env dəyişənləri tapılmadı.");
+        setCatalogLoading(false);
+        return;
+      }
+
       const { data: categoryRows, error: categoryError } = await supabase
         .from("categories")
         .select("*");
@@ -92,6 +98,12 @@ export default function Home() {
 
     loadCatalog();
 
+    if (!supabase) {
+      return () => {
+        active = false;
+      };
+    }
+
     const channel = supabase
       .channel("catalog-realtime")
       .on(
@@ -108,7 +120,9 @@ export default function Home() {
 
     return () => {
       active = false;
-      supabase.removeChannel(channel);
+      if (supabase) {
+        supabase.removeChannel(channel);
+      }
     };
   }, []);
 

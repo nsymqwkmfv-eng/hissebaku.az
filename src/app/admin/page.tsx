@@ -119,17 +119,20 @@ export default function AdminPage() {
       return;
     }
 
-    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || !supabase) {
       setSupabaseReady(false);
+      setLoadError("Supabase env dəyişənləri tapılmadı.");
       return;
     }
 
+    const sb = supabase;
+
     const loadAll = async () => {
       setIsLoading(true);
-      const { data: categoryRows, error: categoryError } = await supabase
+      const { data: categoryRows, error: categoryError } = await sb
         .from("categories")
         .select("*");
-      const { data: productRows, error: productError } = await supabase
+      const { data: productRows, error: productError } = await sb
         .from("products")
         .select("*");
 
@@ -145,7 +148,7 @@ export default function AdminPage() {
 
     loadAll();
 
-    const channel = supabase
+    const channel = sb
       .channel("admin-realtime")
       .on(
         "postgres_changes",
@@ -160,7 +163,9 @@ export default function AdminPage() {
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      if (supabase) {
+        supabase.removeChannel(channel);
+      }
     };
   }, [isAuthed]);
 
@@ -229,7 +234,8 @@ export default function AdminPage() {
   const resetForm = () => setForm(emptyForm);
 
   const handleImportFromLocal = async () => {
-    if (!supabaseReady) {
+    if (!supabaseReady || !supabase) {
+      setAuthError("Supabase env dəyişənləri tapılmadı.");
       return;
     }
     setIsImporting(true);
@@ -263,6 +269,10 @@ export default function AdminPage() {
   };
 
   const handleSave = async () => {
+    if (!supabase) {
+      setAuthError("Supabase env dəyişənləri tapılmadı.");
+      return;
+    }
     if (!form.title.trim()) {
       setAuthError("Məhsul adı boş ola bilməz.");
       return;
@@ -317,6 +327,10 @@ export default function AdminPage() {
   };
 
   const handleDelete = async (productId: string) => {
+    if (!supabase) {
+      setAuthError("Supabase env dəyişənləri tapılmadı.");
+      return;
+    }
     if (!window.confirm("Məhsulu silmək istədiyinizə əminsiniz?")) {
       return;
     }

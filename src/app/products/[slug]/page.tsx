@@ -11,6 +11,9 @@ export const dynamicParams = true;
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { slug } = await params;
+  if (!supabase) {
+    notFound();
+  }
   const rawSlug = decodeURIComponent(slug ?? "").toLowerCase();
   const normalize = (value: string) =>
     value
@@ -39,7 +42,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     inStock: row.in_stock,
   });
 
-  const { data: productRows } = await supabase
+  const { data: productRows } = await supabase!
     .from("products")
     .select("*")
     .eq("slug", rawSlug)
@@ -48,7 +51,7 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
   let productRow = productRows?.[0] ?? null;
 
   if (!productRow && rawSlug !== normalizedSlug) {
-    const { data: normalizedRows } = await supabase
+    const { data: normalizedRows } = await supabase!
       .from("products")
       .select("*")
       .eq("slug", normalizedSlug)
@@ -61,8 +64,8 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
   }
 
   const [{ data: categoryRows }, { data: allProductRows }] = await Promise.all([
-    supabase.from("categories").select("*"),
-    supabase.from("products").select("*"),
+    supabase!.from("categories").select("*"),
+    supabase!.from("products").select("*"),
   ]);
 
   const categories: Category[] = (categoryRows ?? []).map(toCategory);

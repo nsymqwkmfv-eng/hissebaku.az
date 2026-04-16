@@ -57,11 +57,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/hissebak2.png", type: "image/png" },
-      { url: "/hissebak2.png", type: "image/png", sizes: "32x32" },
+      { url: "/images/hissebaku.png", type: "image/png" },
+      { url: "/images/hissebaku.png", type: "image/png", sizes: "32x32" },
     ],
-    shortcut: ["/hissebak2.png"],
-    apple: [{ url: "/hissebak2.png", sizes: "180x180", type: "image/png" }],
+    shortcut: ["/images/hissebaku.png"],
+    apple: [{ url: "/images/hissebaku.png", sizes: "180x180", type: "image/png" }],
   },
 };
 
