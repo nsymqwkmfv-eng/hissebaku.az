@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Manrope, Poppins, Space_Grotesk, Sora } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 const sora = Sora({
@@ -75,7 +76,10 @@ export default function RootLayout({
       lang="az"
       className={`${sora.variable} ${spaceGrotesk.variable} ${poppins.variable} ${manrope.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
